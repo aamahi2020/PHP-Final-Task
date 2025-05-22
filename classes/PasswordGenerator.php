@@ -1,38 +1,39 @@
 <?php
-//PasswordGenerator.php
+
 
 class PasswordGenerator {
     public function generate($length, $lowercase = 0, $uppercase = 0, $numbers = 0, $special = 0) {
         $password = '';
-        $chars = [
+        $characters = [
             'lowercase' => 'abcdefghijklmnopqrstuvwxyz',
             'uppercase' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
             'numbers'   => '0123456789',
             'special'   => '!@#$%^&*()_+-=[]{};:,.<>?'
         ];
 
-        $all = '';
+        // Add selected characters
+        $password .= $this->getRandomCharacters($characters['lowercase'], $lowercase);
+        $password .= $this->getRandomCharacters($characters['uppercase'], $uppercase);
+        $password .= $this->getRandomCharacters($characters['numbers'], $numbers);
+        $password .= $this->getRandomCharacters($characters['special'], $special);
 
-        $password .= $this->pickRandom($chars['lowercase'], $lowercase);
-        $password .= $this->pickRandom($chars['uppercase'], $uppercase);
-        $password .= $this->pickRandom($chars['numbers'], $numbers);
-        $password .= $this->pickRandom($chars['special'], $special);
+        $usedLength = $lowercase + $uppercase + $numbers + $special;
 
-        $used = $lowercase + $uppercase + $numbers + $special;
-
-        if ($used < $length) {
-            $all .= $chars['lowercase'] . $chars['uppercase'] . $chars['numbers'] . $chars['special'];
-            $password .= $this->pickRandom($all, $length - $used);
+        // Fill the rest if length not reached
+        if ($usedLength < $length) {
+            $allChars = $characters['lowercase'] . $characters['uppercase'] . $characters['numbers'] . $characters['special'];
+            $password .= $this->getRandomCharacters($allChars, $length - $usedLength);
         }
 
+        // Shuffle to randomize final password
         return str_shuffle($password);
     }
 
-    private function pickRandom($characters, $count) {
+    private function getRandomCharacters($chars, $count) {
         $result = '';
+        $max = strlen($chars) - 1;
         for ($i = 0; $i < $count; $i++) {
-            $index = rand(0, strlen($characters) - 1);
-            $result .= $characters[$index];
+            $result .= $chars[rand(0, $max)];
         }
         return $result;
     }
