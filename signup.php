@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $db = new Database();
     $conn = $db->connect();
 
-    $sql = "INSERT INTO users (username, password_hash, encrypted_key) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO users (username, password, aes_key) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
     
     if ($stmt->execute([$username, $passwordHash, $encryptedKey])) {
