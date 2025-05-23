@@ -1,10 +1,6 @@
 <?php
 session_start();
 
-if (isset($_SESSION['username'])) {
-    header("Location: dashboard.php");
-    exit();
-} else {
-    header("Location: login.php");
-    exit();
-}
+// Always redirect to signup page first
+header("Location: signup.php");
+exit();
