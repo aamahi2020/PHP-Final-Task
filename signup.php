@@ -7,19 +7,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-    $encryptionKey = bin2hex(random_bytes(16));  
-    $secretKey = $password;  
-    $iv = substr(hash('sha256', $secretKey, true), 0, 16);  
-    $encryptedKey = openssl_encrypt($encryptionKey, 'aes-256-cbc', $secretKey, 0, $iv);
+    $aesKey = bin2hex(random_bytes(16));
 
+    $secretKey = $password;
+    $iv = substr(hash('sha256', $secretKey, true), 0, 16);
+    $encryptedKey = openssl_encrypt($aesKey, 'aes-256-cbc', $secretKey, 0, $iv);
     $db = new Database();
     $conn = $db->connect();
 
     $sql = "INSERT INTO users (username, password, aes_key) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    
+
     if ($stmt->execute([$username, $passwordHash, $encryptedKey])) {
-        echo "User registered successfully!";
+        header("Location: login.php");
+        exit();
     } else {
         echo "Error: Unable to register user.";
     }
@@ -30,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
 </head>
 <body>
@@ -44,5 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <input type="submit" value="Signup">
     </form>
+    <br>
+    <a href="login.php">Already have an account? Login here</a>
 </body>
 </html>
+
